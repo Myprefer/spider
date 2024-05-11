@@ -1,0 +1,24 @@
+import requests
+
+headers1 = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+}
+for char in "bcdefghijklmnopqrstuvwxyz":
+    print(char)
+    max_url = "https://api.supplytrace.org/api/advancesearchcompanies?limit=250&offset=0&search=" + char + "&searchMethod=starts_with"
+    max = requests.get(url=max_url, headers=headers1).json()['count']
+    for j in range(0, int(max / 250) + 1):
+        para = {
+            "limit": "250",
+            "offset": str(j * 250),
+            "search": char,
+            "searchMethod": "starts_with"
+        }
+        urls = "https://api.supplytrace.org/api/advancesearchcompanies"
+        res = requests.get(url=urls, headers=headers1, params=para)
+        # print(res.url)
+        if len(res.json()['results']) == 0:
+            break
+        for item in res.json()['results']:
+            with open(char + ".txt", "a", encoding='utf-8') as f:
+                f.write(str(item['id']) + '\n')
